@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
 #include "DiaryOperator.hpp"
@@ -22,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
        }
        if(DiaryOperator::getInstance().login(this->ui->editEmail->text(), this->ui->editPasswd->text())){
            QMessageBox::information(this, "提示", "登录成功.");
+           QString tipInformation = this->ui->textTipInformation->toPlainText();
+           tipInformation += QTime::currentTime().toString()+":登录成功\r\n";
+           this->ui->textTipInformation->setPlainText(tipInformation);
+           this->ui->textTipInformation->moveCursor(QTextCursor::End);
            this->setEnabled(true);
            return ;
        }
@@ -43,6 +47,12 @@ MainWindow::MainWindow(QWidget *parent)
         QString filename = path + "/nideriji.json";
         scriptExportToJson(filename);
         this->setEnabled(true);
+    });
+    connect(ui->btnExprotToPdf,&QPushButton::clicked,[this](){
+        QMessageBox::information(this, "提示", "该功能暂未实现.");
+    });
+    connect(ui->btnImportFromJson,&QPushButton::clicked,[this](){
+        QMessageBox::information(this, "提示", "该功能暂未实现.");
     });
 }
 

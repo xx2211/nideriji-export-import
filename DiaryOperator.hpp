@@ -3,7 +3,6 @@
 
 #include "HttpsUtil.hpp"
 #include <QString>
-#include <QSettings>
 #include <QtNetwork/QNetworkCookie>
 #include <QJsonDocument>
 #include <QJsonObject>
