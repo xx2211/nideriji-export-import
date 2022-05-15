@@ -44,6 +44,12 @@ MainWindow::MainWindow(QWidget *parent)
         scriptExportToJson(filename);
         this->setEnabled(true);
     });
+    connect(ui->btnExprotToPdf,&QPushButton::clicked,[this](){
+        QMessageBox::information(this, "提示", "该功能暂未实现.");
+    });
+    connect(ui->btnImportFromJson,&QPushButton::clicked,[this](){
+        QMessageBox::information(this, "提示", "该功能暂未实现.");
+    });
 }
 
 MainWindow::~MainWindow()
