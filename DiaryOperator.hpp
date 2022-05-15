@@ -4,9 +4,10 @@
 #include "HttpsUtil.hpp"
 #include <QString>
 #include <QSettings>
-#include <QNetworkCookie>
+#include <QtNetwork/QNetworkCookie>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
 class DiaryOperator{
 public: // singleton
@@ -18,19 +19,29 @@ public: // singleton
     }
 private: // singleton
     DiaryOperator() {
-        initThisObject();
+//        initThisObject();
     };                   // Constructor
     DiaryOperator(DiaryOperator const&);              // Don't Implement
     void operator=(DiaryOperator const&); // Don't implement
 
 public: // data member
     QByteArray token = "hello";
-    QByteArray csrfmiddlewaretoken = "csrfmiddlewaretoken";
+    QByteArray csrfmiddlewaretoken = "YYCRw31cBrt3MW8cS6BbWsaESks1n0s1";
     QJsonObject curDiaryJsonObject;
 
 public: // public func member
-    QString login(const QString &email, const QString &passwd){
-        return "";
+    bool login(const QString &email, const QString &passwd){
+        QMap<QString,QString> formMap;
+        formMap["csrfmiddlewaretoken"]=getInstance().csrfmiddlewaretoken;
+        formMap["email"]=email;
+        formMap["password"]=passwd;
+        QByteArray response = HttpsUtil::getInstance().syncHttpsRequest("https://nideriji.cn/api/login/","post",
+                                                  QVariant::Invalid,"",HttpsUtil::getInstance().map2formBody(formMap));
+        if(!checkResponesNoError(response)){
+            return false;
+        }
+        token = QJsonDocument::fromJson(response).object().value("token").toString().toUtf8();
+        return true;
     }
 
     bool saveDiaryToToday(const QString &content){
@@ -132,6 +143,31 @@ public: // public func member
         return true;
     }
 
+    QJsonArray getAllDiaryToJson(){
+        QJsonArray diaries;
+        QByteArray response = getDiaryRawRespByUrl("https://nideriji.cn/api/diary/latest/");
+        if(!checkResponseDoesHavDiary(response)){
+            return diaries;
+        }
+        diaries.append(
+                QJsonDocument::fromJson(response).object().value("diary")
+        );
+        bool hasMore = false;
+        do{
+            QString lastDiaryDate = diaries.last().toObject().value("createddate").toString();
+            QByteArray temp = getDiaryRawRespByUrl(
+                    "https://ohshenghuo.com/api/diary/all/?latest_date=" + lastDiaryDate
+                    );
+            QJsonObject tempJson = QJsonDocument::fromJson(temp).object();
+            hasMore = tempJson.value("has_more").toBool();
+            QJsonArray tempDiaries = tempJson.value("diaries").toArray();
+            for(int i=0; i<tempDiaries.size(); ++i){
+                diaries.push_back(tempDiaries.at(i));
+            }
+        } while (hasMore);
+        return  diaries;
+    }
+
 private: // private func member
     //return true if no error. else return false.
     bool checkResponesNoError(const QByteArray &receiveData){
@@ -192,13 +228,13 @@ private: // private func member
                                    "token "+getInstance().token);
     }
 
-    void initThisObject(){
-        QSettings settings("config.ini",QSettings::IniFormat);
-        settings.beginGroup("login");
-        csrfmiddlewaretoken = settings.value("csrfmiddlewaretoken").toByteArray();
-        token = settings.value("token").toByteArray();
-        settings.endGroup();
-    }
+//    void initThisObject(){
+//        QSettings settings("config.ini",QSettings::IniFormat);
+//        settings.beginGroup("login");
+//        csrfmiddlewaretoken = settings.value("csrfmiddlewaretoken").toByteArray();
+//        token = settings.value("token").toByteArray();
+//        settings.endGroup();
+//    }
 
 };
 

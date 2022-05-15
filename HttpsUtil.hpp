@@ -2,10 +2,10 @@
 #define HTTPSUTIL_H
 
 #include <QString>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkAccessManager>
 #include <QEventLoop>
-#include <QNetworkReply>
+#include <QtNetwork/QNetworkReply>
 
 class HttpsUtil{
 public:

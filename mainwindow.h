@@ -15,6 +15,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public:
+    void scriptExportToJson(const QString&);
+
 private:
     Ui::MainWindow *ui;
 };
