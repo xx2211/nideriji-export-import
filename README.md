@@ -10,5 +10,13 @@
 
 #### 使用说明
 
-1.  下载最新可执行文件 [release](https://gitee.com/xx2211/nideriji_export_import/attach_files/1061230/download/nideriji_export_release0.9.exe)
-2.  打开，按提示操作即可。
+若不想自己编译，只想使用，则下载最新版可执行文件 [release](https://gitee.com/xx2211/nideriji_export_import/attach_files/1061230/download/nideriji_export_release0.9.exe)，运行后按提示操作即可。
+
+#### 构建说明
+若自己编译，需要提供opesll库的libcrypto-1_1-x64.dll和libssl-1_1-x64.dll两个文件。
+否则无法使用https协议。
+调试时把这两个文件放在编译器的bin目录即可。
+打包时把这两个文件和可执行文件放在一起即可。
+
+#### 其他说明
+目前只能使用mingw编译，用msvc编译器有奇怪的bug。
