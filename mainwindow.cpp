@@ -16,38 +16,38 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnLogin,&QPushButton::clicked,[this](){
         this->putTipInfo("尝试登录, 请稍候...");
         this->setEnabled(false);
-       if(DiaryOperator::getInstance().checkLoginStatus()){
-           this->putTipInfo("已登录过.");
-           QMessageBox::information(this, "提示", "已登录过.");
-           this->setEnabled(true);
-           return ;
-       }
-       if(DiaryOperator::getInstance().login(this->ui->editEmail->text(), this->ui->editPasswd->text())){
-           QMessageBox::information(this, "提示", "登录成功.");
-           this->putTipInfo("登录成功.");
-           this->setEnabled(true);
-           return ;
-       }
-        QMessageBox::information(this, "提示", "登录失败或此账号未创建过日记,请重试.");
-        this->putTipInfo("登录失败或此账号未创建过日记,请重试.");
+        do{
+            if(DiaryOperator::getInstance().checkLoginStatus()){
+                this->putTipInfo("已登录过.");
+                QMessageBox::information(this, "提示", "已登录过.");
+                break;
+            }
+            if(DiaryOperator::getInstance().login(this->ui->editEmail->text(), this->ui->editPasswd->text())){
+                QMessageBox::information(this, "提示", "登录成功.");
+                this->putTipInfo("登录成功.");
+                break;
+            }
+            QMessageBox::information(this, "提示", "登录失败或此账号未创建过日记,请重试.");
+            this->putTipInfo("登录失败或此账号未创建过日记,请重试.");
+        } while (0);
         this->setEnabled(true);
     });
 
     connect(ui->btnExprotToJson,&QPushButton::clicked,[this]() {
         this->setEnabled(false);
-        if (!DiaryOperator::getInstance().checkLoginStatus()) {
-            QMessageBox::information(this, "提示", "还未登录,请先登录.");
-            this->putTipInfo("还未登录,请先登录.");
-            this->setEnabled(true);
-            return;
-        }
-        QString path = QFileDialog::getExistingDirectory(this, "请选择导出的json文件的保存位置", "/");
-        if (path.isEmpty()) {//按了取消
-            this->setEnabled(true);
-            return;
-        }
-        QString filename = path + "/nideriji.json";
-        scriptExportToJson(filename);
+        do{
+            if (!DiaryOperator::getInstance().checkLoginStatus()) {
+                QMessageBox::information(this, "提示", "还未登录,请先登录.");
+                this->putTipInfo("还未登录,请先登录.");
+                break;
+            }
+            QString path = QFileDialog::getExistingDirectory(this, "请选择导出的json文件的保存位置", "/");
+            if (path.isEmpty()) {//按了取消
+                break;
+            }
+            QString filename = path + "/nideriji.json";
+            scriptExportToJson(filename);
+        } while (0);
         this->setEnabled(true);
     });
 
