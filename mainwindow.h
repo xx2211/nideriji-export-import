@@ -17,6 +17,7 @@ public:
 
 public:
     void scriptExportToJson(const QString&);
+    void putTipInfo(const QString&);
 
 private:
     Ui::MainWindow *ui;
