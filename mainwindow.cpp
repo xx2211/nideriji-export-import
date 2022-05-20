@@ -18,14 +18,14 @@ MainWindow::MainWindow(QWidget *parent)
         this->putTipInfo("尝试登录, 请稍候...");
         this->setEnabled(false);
         do{
-            if(DiaryOperator::getInstance().checkLoginStatus()){
-                this->putTipInfo("已登录过.");
-                QMessageBox::information(this, "提示", "已登录过.");
-                break;
-            }
+//            if(DiaryOperator::getInstance().checkLoginStatus()){
+//                this->putTipInfo("已登录过.");
+//                QMessageBox::information(this, "提示", "已登录过.");
+//                break;
+//            }
             if(DiaryOperator::getInstance().login(this->ui->editEmail->text(), this->ui->editPasswd->text())){
                 QMessageBox::information(this, "提示", "登录成功.");
-                this->putTipInfo("登录成功.");
+                this->putTipInfo("登录成功.当前登录账号:"+this->ui->editEmail->text());
                 break;
             }
             QMessageBox::information(this, "提示", "登录失败或此账号未创建过日记,请重试.");
