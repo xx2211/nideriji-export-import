@@ -10,7 +10,7 @@
 
 #### 使用说明
 
-若不想自己编译，只想使用，则下载最新版可执行文件 [release](https://gitee.com/xx2211/nideriji_export_import/attach_files/1061230/download/nideriji_export_release0.9.exe)，运行后按提示操作即可。
+若不想自己编译，只想使用，则下载最新版可执行文件 [nideriji_tool_x64.exe](https://github.com/xxx-jjw/nideriji-export-import/releases/download/r0.91/nideriji_tool_0.91_x64.exe)，运行后按提示操作即可。
 
 #### 构建说明
 若自己编译，需要提供opesll库的libcrypto-1_1-x64.dll和libssl-1_1-x64.dll两个文件。
