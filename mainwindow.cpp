@@ -14,15 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->textTipInformation->setReadOnly(true);
+
     connect(ui->btnLogin,&QPushButton::clicked,[this](){
         this->putTipInfo("尝试登录, 请稍候...");
         this->setEnabled(false);
         do{
-//            if(DiaryOperator::getInstance().checkLoginStatus()){
-//                this->putTipInfo("已登录过.");
-//                QMessageBox::information(this, "提示", "已登录过.");
-//                break;
-//            }
             if(DiaryOperator::getInstance().login(this->ui->editEmail->text(), this->ui->editPasswd->text())){
                 QMessageBox::information(this, "提示", "登录成功.");
                 this->putTipInfo("登录成功.当前登录账号:"+this->ui->editEmail->text());
@@ -47,7 +44,9 @@ MainWindow::MainWindow(QWidget *parent)
                 this->putTipInfo("打开文件失败,请重试.");
                 break;
             }
-            QString filename = path + "/nideriji.json";
+            QString filename = path + "/nideriji_bak_"
+                    + ui->editEmail->text() + "_"
+                    + QDate::currentDate().toString("yyyy-MM-dd") + ".json";
             scriptExportToJson(filename);
         } while (0);
         this->setEnabled(true);
@@ -66,7 +65,9 @@ MainWindow::MainWindow(QWidget *parent)
                 this->putTipInfo("打开文件失败,请重试.");
                 break;
             }
-            QString filename = path + "/nideriji.pdf";
+            QString filename = path + "/nideriji_bak_"
+                    + ui->editEmail->text() + "_"
+                    + QDate::currentDate().toString("yyyy-MM-dd") + ".pdf";
             scriptExportToPdf(filename);
         } while (0);
         this->setEnabled(true);
