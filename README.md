@@ -10,9 +10,11 @@
 
 #### 使用说明
 
-若不想自己编译，只想使用，则下载最新版可执行文件 [nideriji_tool_x64.exe](https://github.com/xxx-jjw/nideriji-export-import/releases/download/r0.91/nideriji_tool_0.91_x64.exe)，运行后按提示操作即可。
+若不想自己编译，只想使用，则下载最新版可执行文件 ，打开后按提示操作即可。
 
 #### 构建说明
+构建工具，qt5.15.2 mingw8<br>
+步骤: file -> new projcet -> import project -> git clone -> choose -> 填入本项目git clone地址 -> next -> finish -> 选择 qt5.xx.x mingw 64bit -> configure project -> 点击左下角绿色三角即可run/debug
 若自己编译，需要提供opesll库的libcrypto-1_1-x64.dll和libssl-1_1-x64.dll两个文件。
 否则无法使用https协议。
 调试时把这两个文件放在编译器的bin目录即可。
