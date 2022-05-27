@@ -18,6 +18,7 @@ public:
 public:
     void scriptExportToJson(const QString&);
     void scriptExportToPdf(const QString&);
+    void scriptImportFromJson(const QString&);
     void putTipInfo(const QString&);
 
 private:

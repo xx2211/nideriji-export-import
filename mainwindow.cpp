@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 
 #include "DiaryOperator.hpp"
+#include "json.hpp"
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -74,7 +75,25 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(ui->btnImportFromJson,&QPushButton::clicked,[this](){
-        QMessageBox::information(this, "提示", "该功能暂未实现.");
+        this->setEnabled(false);
+        do{
+            if (!DiaryOperator::getInstance().checkLoginStatus()) {
+                QMessageBox::information(this, "提示", "还未登录,请先登录.");
+                this->putTipInfo("还未登录,请先登录.");
+                break;
+            }
+            auto userSelect = QMessageBox::warning(this, "警告!!!",
+                                 "警告!!! \"导入日记\"为实验性功能, 可能导致云端日记丢失. 确定要导入吗?",
+                                 QMessageBox::Yes|QMessageBox::Cancel);
+            if(QMessageBox::Yes != userSelect)
+                break;
+            this->putTipInfo("用户选择导入.");
+            QString fileName = QFileDialog::getOpenFileName(this,
+                     QStringLiteral("选择json文件"),"F:",QStringLiteral("文本文件(*json)"));
+            this->putTipInfo("已选择json文件: " + fileName);
+            this->scriptImportFromJson(fileName);
+        } while (0);
+        this->setEnabled(true);
     });
 
 }
@@ -90,23 +109,27 @@ MainWindow::~MainWindow()
 void MainWindow::scriptExportToJson(const QString &filename){
     QFile file(filename);
     file.open(QIODevice::ReadWrite|QIODevice::Text);
-    if(!file.exists()){
-        QMessageBox::information(this, "提示", "打开文件失败,请重试.");
-        return;
-    }
-    putTipInfo("开始导出json.");
-    putTipInfo("打开文件成功.");
-    putTipInfo("开始从服务器获取日记.");
-    QJsonArray diaries = DiaryOperator::getInstance().getAllDiaryToJson();
-    putTipInfo("共获取到" + QString::fromStdString(std::to_string(diaries.size()))+ "篇日记.");
-    putTipInfo("开始写入json文件.");
-    int64_t cntWrite = file.write( QJsonDocument(diaries).toJson() );
-    if(cntWrite<=0){
-        putTipInfo("写入json文件失败.");
-        return;
-    }
+
+    do{
+        if(!file.exists()){
+            QMessageBox::information(this, "提示", "打开文件失败,请重试.");
+            break;
+        }
+        putTipInfo("开始导出json.");
+        putTipInfo("打开文件成功.");
+        putTipInfo("开始从服务器获取日记.");
+        QJsonArray diaries = DiaryOperator::getInstance().getAllDiaryToJson();
+        putTipInfo("共获取到" + QString::fromStdString(std::to_string(diaries.size()))+ "篇日记.");
+        putTipInfo("开始写入json文件.");
+        int64_t cntWrite = file.write( QJsonDocument(diaries).toJson() );
+        if(cntWrite<=0){
+            putTipInfo("写入json文件失败.");
+            break;
+        }
+        putTipInfo("写入json文件成功.json文件保存位置:" + filename);
+    }while(0);
+
     file.close();
-    putTipInfo("写入json文件成功.json文件保存位置:" + filename);
 }
 
 void MainWindow::scriptExportToPdf(const QString &filename){
@@ -146,6 +169,46 @@ void MainWindow::scriptExportToPdf(const QString &filename){
     putTipInfo("生成pdf文件成功.pdf文件保存位置: " + filename);
 }
 
+void MainWindow::scriptImportFromJson(const QString &filename){
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly|QIODevice::Text);
+
+    do{
+        if(!file.exists()){
+            this->putTipInfo("打开文件失败. 请重试. ");
+            break;
+        }
+        putTipInfo("打开文件成功.");
+        std::string jsonStr;
+        while(!file.atEnd()){
+            jsonStr.append(file.read(1));
+        }
+        auto diariesJson = nlohmann::json::parse(jsonStr);
+        if(!diariesJson.is_array()){
+            qDebug()<<"json parse error. in import diary from json.";
+            break;
+        }
+        int cntDiaryNum=0,cntSuccess=0,cntFail=0;
+        for(auto it=diariesJson.begin(); it!=diariesJson.end(); ++it){
+            QString curContent = QString::fromStdString( it->at("content").get<std::string>() );
+            QString curDate = QString::fromStdString( it->at("createddate").get<std::string>() );
+            bool curRes = DiaryOperator::getInstance().saveDiaryToDate(curContent, QDate::fromString(curDate, "yyyy-MM-dd"));
+            QString curResDes = curRes?"成功":"失败";
+            putTipInfo("导入第" + QString::number(++cntDiaryNum) + "篇日记" + curResDes);
+            if(curRes)
+                ++cntSuccess;
+            else
+                ++cntFail;
+        }
+        putTipInfo("json文件中共"+QString::number(cntDiaryNum)+"篇日记");
+        putTipInfo(QString::number(cntSuccess)+"篇日记导入成功");
+        putTipInfo(QString::number(cntFail)+"篇日记导入失败");
+    }while(0);
+
+    file.close();
+
+
+}
 
 void MainWindow::putTipInfo(const QString & info) {
     QString tipInformation = this->ui->textTipInformation->toPlainText();
