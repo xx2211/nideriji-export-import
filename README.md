@@ -16,7 +16,7 @@
 
 #### 构建说明
 构建工具，qt5.15.2 mingw<br>
-步骤: file -> new projcet -> import project -> git clone -> choose -> 填入本项目git clone地址 -> next -> finish -> 选择 qt5.xx.x mingw xxbit -> configure project -> 点击左下角绿色三角即可run/debug <br>
+步骤: 打开qt creator -> file -> new projcet -> import project -> git clone -> choose -> 填入本项目git clone地址 -> next -> finish -> 选择 qt5.xx.x mingw xxbit -> configure project -> 点击左下角绿色三角即可run/debug <br>
  **注意**  <br>
 若自己构建，需要提供opesll库的libcrypto-1_1-x64.dll和libssl-1_1-x64.dll两个文件。<br>
 否则无法使用https协议(提示tls初始化失败)<br>
